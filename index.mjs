@@ -1,7 +1,17 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
+import session from 'express-session';
+
 const app = express();
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'cst336 csumb',
+  resave: false,
+  saveUninitialized: true,
+//   cookie: { secure: true }
+}))
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 //for Express to get values using the POST method
