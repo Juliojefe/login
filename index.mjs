@@ -16,13 +16,13 @@ const pool = mysql.createPool({
 });
 //routes
 app.get('/', (req, res) => {
-    // console.log("Server Running");
     res.render('login.ejs')
 });
 
 app.post('/loginProcess', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
+    let hashedPassword = "$2b$10$3pFWayMMLhsvtTpqJdeZ.ul/gu6ACqj5mKqidhKxAAbEIOdUVE03q";
     if (password == "s3cr3t") {
         res.render('home.ejs');
     } else {
