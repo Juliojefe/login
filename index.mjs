@@ -9,7 +9,7 @@ app.use(session({
   secret: 'cst336 csumb',
   resave: false,
   saveUninitialized: true,
-//   cookie: { secure: true }
+//   cookie: { secure: true }   //  only works in production
 }))
 
 app.set('view engine', 'ejs');
@@ -26,19 +26,20 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
-let isUserAuthenticated = false;
+// let isUserAuthenticated = false;
 
 //routes
 app.get('/', (req, res) => {
     res.render('login.ejs')
 });
 
-app.get('/profile', (req, res) => {
-    if (isUserAuthenticated) {
-        res.render('home.ejs')
-    } else {
-        res.render('login.ejs')
-    }
+app.get('/profile', isUserAuthenticated, (req, res) => {
+    res.render('profile.ejs');
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/')
 });
 
 app.post('/loginProcess', async (req, res) => {
@@ -49,6 +50,8 @@ app.post('/loginProcess', async (req, res) => {
     const [rows] = await pool.query(sql, [username]);
     // const match = await bcrypt.compare(password, hashedPassword);
     if (rows.length > 0) {
+        req.session.isUserAuthenticated = true;
+        req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
         res.render('home.ejs');
     } else {
         res.render('login.ejs')
@@ -64,6 +67,20 @@ app.get("/dbTest", async (req, res) => {
         res.status(500).send("Database error!");
     }
 });//dbTest
+
+app.get('/newRoute', isUserAuthenticated, (req, res) => {
+    res.render('newView.ejs')
+});
+
+// middleware functions
+function isUserAuthenticated(req, res, next) {
+    if (req.session.isUserAuthenticated) {
+        next();
+    } else {
+        res.redirect('/')
+    }
+}
+
 app.listen(3000, () => {
     console.log("Express server running")
 })
