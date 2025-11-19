@@ -30,7 +30,7 @@ const pool = mysql.createPool({
 
 //routes
 app.get('/', (req, res) => {
-    res.render('login.ejs')
+    res.render('login.ejs');
 });
 
 app.get('/profile', isUserAuthenticated, (req, res) => {
@@ -54,7 +54,7 @@ app.post('/loginProcess', async (req, res) => {
         req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
         res.render('home.ejs');
     } else {
-        res.render('login.ejs')
+        res.render('login.ejs', {"loginError" : "Wrong Credentials"});
     }
 });
 
